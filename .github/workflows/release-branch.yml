@@ -15,18 +15,27 @@ jobs:
 
       - name: Prepare Release Branch
         run: |
+          set -e  # Exit on any error
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-          # Create or switch to release branch
+          # Create or reset the release branch to match main
+          git checkout main
+          git branch -D release || true  # Delete release branch if it exists
           git checkout -B release
 
-          # Remove everything except the library folder while keeping the folder structure intact
+          # Ensure the library folder exists
+          if [ ! -d "lib/SimpleLibrary" ]; then
+            echo "Error: lib/SimpleLibrary does not exist. Ensure the folder is present in the repository."
+            exit 1
+          fi
+
+          # Remove everything except the library folder
           find . -mindepth 1 ! -path './lib/SimpleLibrary/*' ! -path './lib/SimpleLibrary' \
             ! -name '.git' ! -name '.gitignore' -exec rm -rf {} +
 
           # Move library contents to the root
-          mv lib/SimpleLibrary/* .
+          mv lib/SimpleLibrary/* . || { echo "Error: Failed to move files from lib/SimpleLibrary"; exit 1; }
           rm -rf lib
 
           # Commit changes
