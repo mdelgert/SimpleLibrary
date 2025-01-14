@@ -2,20 +2,9 @@
 
 set -e  # Exit on any error
 
-# Set repository root
-REPO_ROOT="$(git rev-parse --show-toplevel)"
-
-if [ -z "$REPO_ROOT" ]; then
-  echo "Error: Not inside a Git repository. Please run this script from within a valid Git repository."
-  exit 1
-fi
-
-echo "Changing to repository root: $REPO_ROOT"
-cd "$REPO_ROOT"
-
 echo "Configuring Git user..."
-git config user.name "Local Test User"
-git config user.email "local@test.com"
+git config user.name "Matthew Elgert"
+git config user.email "mdelgert@yahoo.com"
 
 echo "Switching to main branch..."
 git checkout main
@@ -41,8 +30,8 @@ cp -R lib/SimpleLibrary/* /tmp/SimpleLibrary/
 
 echo "Removing everything else..."
 find . -mindepth 1 \
-  ! -name '.git' \
-  ! -name '.gitignore' \
+  -name '.git' -prune -o \
+  -name '.gitignore' -prune -o \
   -exec rm -rf {} +
 
 echo "Restoring library contents to root directory..."
@@ -50,10 +39,10 @@ cp -R /tmp/SimpleLibrary/* .
 rm -rf /tmp/SimpleLibrary
 
 echo "Staging and committing changes..."
-git --work-tree="$REPO_ROOT" --git-dir="$REPO_ROOT/.git" add .
-git --work-tree="$REPO_ROOT" --git-dir="$REPO_ROOT/.git" commit -m "Update release branch" || echo "No changes to commit"
+git add .
+git commit -m "Update release branch" || echo "No changes to commit"
 
 echo "Pushing release branch to origin..."
-git --work-tree="$REPO_ROOT" --git-dir="$REPO_ROOT/.git" push origin release --force
+git push origin release --force
 
 echo "Release branch updated successfully!"
