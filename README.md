@@ -242,5 +242,3 @@ lib_deps = https://github.com/mdelgert/SimpleLibrary.git#release
 ---
 
 By following this guide, you can create, test, and distribute a simple PlatformIO library efficiently, ensuring compatibility with both Arduino IDE and PlatformIO. This workflow can be expanded for more complex libraries in the future.
-
-https://github.com/arduino/actions
