@@ -21,9 +21,17 @@ if [ ! -d "lib/SimpleLibrary" ]; then
   exit 1
 fi
 
+# echo "Removing everything except lib/SimpleLibrary..."
+# find . -mindepth 1 ! -path './lib/SimpleLibrary/*' ! -path './lib/SimpleLibrary' \
+#   ! -name '.git' ! -name '.gitignore' -exec rm -rf {} +
+
 echo "Removing everything except lib/SimpleLibrary..."
-find . -mindepth 1 ! -path './lib/SimpleLibrary/*' ! -path './lib/SimpleLibrary' \
-  ! -name '.git' ! -name '.gitignore' -exec rm -rf {} +
+find . -mindepth 1 \
+  ! -path './lib/SimpleLibrary' \
+  ! -path './lib/SimpleLibrary/*' \
+  ! -name '.git' \
+  ! -name '.gitignore' \
+  -exec rm -rf {} +
 
 echo "Current directory structure after removal:"
 tree -a || ls -R
