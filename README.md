@@ -209,7 +209,7 @@ jobs:
 ### PlatformIO Users
 To use your library, users can add the following to their `platformio.ini`:
 ```ini
-lib_deps = https://github.com/yourusername/SimpleLibrary.git#release
+lib_deps = https://github.com/mdelgert/SimpleLibrary.git#release
 ```
 
 ### Arduino IDE Users
@@ -223,10 +223,6 @@ lib_deps = https://github.com/yourusername/SimpleLibrary.git#release
 2. Push changes to the `main` branch.
 3. Verify that the GitHub Action updates the `release` branch.
 4. Test installing the library via `lib_deps` in another PlatformIO project:
-   ```ini
-   lib_deps = https://github.com/yourusername/SimpleLibrary.git#release
-   ```
-
 ---
 
 ## 7. Best Practices
