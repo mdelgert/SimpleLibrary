@@ -1,5 +1,4 @@
-#ifndef SIMPLE_LIBRARY_H
-#define SIMPLE_LIBRARY_H
+#pragma once
 
 #include <Arduino.h>
 
@@ -9,5 +8,3 @@ public:
     void printHello();
     int addNumbers(int a, int b);
 };
-
-#endif // SIMPLE_LIBRARY_H
