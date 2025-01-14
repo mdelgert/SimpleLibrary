@@ -174,31 +174,59 @@ on:
       - main
 
 jobs:
-  update-release:
+  update-release-branch:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Prepare Release Branch
+      - name: Configure Git User
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-          # Create or switch to release branch
+      - name: Prepare Release Branch
+        run: |
+          set -e  # Exit on any error
+
+          # Configurable variables
+          LIBRARY_NAME="SimpleLibrary"
+
+          echo "Switching to main branch..."
+          git checkout main
+
+          echo "Deleting release branch if it exists..."
+          git branch -D release || true
+
+          echo "Creating and switching to release branch..."
           git checkout -B release
 
-          # Remove everything except the library folder
-          find . -mindepth 1 ! -regex '^./lib/SimpleLibrary\(.*\)?' ! -name '.git' ! -name '.gitignore' -exec rm -rf {} +
+          echo "Checking if lib/$LIBRARY_NAME exists in main branch..."
+          if [ ! -d "lib/$LIBRARY_NAME" ]; then
+            echo "Error: lib/$LIBRARY_NAME does not exist in the main branch."
+            exit 1
+          fi
 
-          # Move library contents to the root
-          mv lib/SimpleLibrary/* .
+          echo "Removing everything except files specified..."
+          find . -mindepth 1 \
+            -name '.git' -prune -o \
+            -name 'README.md' -prune -o \
+            -name '.gitignore' -prune -o \
+            -path "./lib" -prune -o \
+            -exec rm -rf {} +
+
+          echo "Moving library contents to the root directory..."
+          mv lib/"$LIBRARY_NAME"/* . || { echo "Error: Failed to move files from lib"; exit 1; }
           rm -rf lib
 
-          # Commit changes
+          echo "Staging and committing changes..."
           git add .
           git commit -m "Update release branch" || echo "No changes to commit"
+
+      - name: Pushing release branch to origin
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git push origin release --force
 ```
 
