@@ -45,7 +45,7 @@ jobs:
             -name '.git' -prune -o \
             -name 'README.md' -prune -o \
             -name '.gitignore' -prune -o \
-            -path "./lib/$LIBRARY_NAME" -prune -o \
+            -path "./lib" -prune -o \
             -exec rm -rf {} +
 
           echo "Moving library contents to the root directory..."
