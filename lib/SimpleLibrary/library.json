@@ -1,0 +1,22 @@
+{
+    "name": "SimpleLibrary",
+    "version": "1.0.1",
+    "description": "A simple Arduino library to print messages and perform basic calculations.",
+    "keywords": ["arduino", "platformio", "example", "hello world", "math"],
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/mdelgert/SimpleLibrary.git"
+    },
+    "authors": [
+      {
+        "name": "Matthew Elgert",
+        "email": "actions@github.com",
+        "url": "https://github.com/mdelgert",
+        "maintainer": true
+      }
+    ],
+    "license": "MIT",
+    "frameworks": ["arduino"],
+    "platforms": ["espressif32", "atmelavr"]
+  }
+  

@@ -1,0 +1,52 @@
+name: Update Main Branch
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  update-main:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Configure Git User
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Prepare Main Branch
+        run: |
+          set -e  # Exit on any error
+
+          # Configurable variables
+          LIBRARY_NAME="SimpleLibrary"
+
+          echo "Switching to dev branch..."
+          git checkout dev
+
+          echo "Deleting main branch if it exists locally..."
+          git branch -D main || true
+
+          echo "Checking out a new main branch..."
+          git checkout --orphan main
+
+          echo "Removing all files from main..."
+          git rm -rf . || true
+
+          echo "Moving library contents to the root directory..."
+          mkdir -p .temp-lib
+          cp -r lib/"$LIBRARY_NAME"/* .temp-lib
+          cp -r .temp-lib/* .
+          rm -rf .temp-lib lib
+
+          echo "Staging and committing changes..."
+          git add .
+          git commit -m "Update main branch with production-ready library files"
+
+      - name: Pushing Main Branch
+        run: |
+          git push origin main --force
