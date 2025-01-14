@@ -9,8 +9,8 @@ void setup() {
 
 void loop() {
     lib.printHello();
-    int result = lib.addNumbers(10, 20);
-    Serial.print("Result of 10 + 20: ");
-    Serial.println(result);
+    // int result = lib.addNumbers(10, 20);
+    // Serial.print("Result of 10 + 20: ");
+    // Serial.println(result);
     delay(1000);
 }
