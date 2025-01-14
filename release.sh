@@ -2,6 +2,9 @@
 
 set -e  # Exit on any error
 
+# Configurable variables
+LIBRARY_NAME="SimpleLibrary"  # Change this to the name of your library
+
 echo "Switching to main branch..."
 git checkout main
 
@@ -11,9 +14,9 @@ git branch -D release 2>/dev/null || true  # Safely delete release branch if it 
 echo "Creating and switching to release branch..."
 git checkout -B release
 
-echo "Checking if lib directory exists in main branch..."
-if [ ! -d "lib" ]; then
-  echo "Error: lib directory does not exist in the main branch."
+echo "Checking if lib/$LIBRARY_NAME exists in main branch..."
+if [ ! -d "lib/$LIBRARY_NAME" ]; then
+  echo "Error: lib/$LIBRARY_NAME does not exist in the main branch."
   exit 1
 fi
 
@@ -25,7 +28,7 @@ find . -mindepth 1 \
   -exec rm -rf {} +
 
 echo "Moving library contents to the root directory..."
-mv lib/* . || { echo "Error: Failed to move files from lib"; exit 1; }
+mv lib/"$LIBRARY_NAME"/* . || { echo "Error: Failed to move files from lib"; exit 1; }
 rm -rf lib
 
 echo "Staging and committing changes..."
