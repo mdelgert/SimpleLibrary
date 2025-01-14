@@ -21,8 +21,9 @@ jobs:
           # Create or switch to release branch
           git checkout -B release
 
-          # Remove everything except the library folder
-          find . -mindepth 1 ! -regex '^./lib/SimpleLibrary\(.*\)?' ! -name '.git' ! -name '.gitignore' -exec rm -rf {} +
+          # Remove everything except the library folder while keeping the folder structure intact
+          find . -mindepth 1 ! -path './lib/SimpleLibrary/*' ! -path './lib/SimpleLibrary' \
+            ! -name '.git' ! -name '.gitignore' -exec rm -rf {} +
 
           # Move library contents to the root
           mv lib/SimpleLibrary/* .

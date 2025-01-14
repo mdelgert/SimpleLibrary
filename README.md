@@ -5,21 +5,11 @@ This document explains how to create a simple PlatformIO library from scratch, o
 
 ---
 
-## 1. Folder Structure and setup
+## 1. Project Folder Structure and Setup
 
 Create a new project:
 ```bash
 pio project init --board esp32-s3-devkitc-1 --project-option "platform=espressif32@6.9.0" --project-option "framework=arduino"
-```
-
-Create release branch:
-```bash
-git branch release
-git push -u origin release
-git branch -r
-git branch -d release
-git branch -D release
-git push origin --delete release
 ```
 
 The following folder structure is recommended for developing your PlatformIO library and testing it in a single repository:
