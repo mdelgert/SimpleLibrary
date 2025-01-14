@@ -1,0 +1,34 @@
+name: Update Release Branch
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Prepare Release Branch
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+          # Create or switch to release branch
+          git checkout -B release
+
+          # Remove everything except the library folder
+          find . -mindepth 1 ! -regex '^./lib/SimpleLibrary\(.*\)?' ! -name '.git' ! -name '.gitignore' -exec rm -rf {} +
+
+          # Move library contents to the root
+          mv lib/SimpleLibrary/* .
+          rm -rf lib
+
+          # Commit changes
+          git add .
+          git commit -m "Update release branch" || echo "No changes to commit"
+          git push origin release --force

@@ -7,6 +7,11 @@ This document explains how to create a simple PlatformIO library from scratch, o
 
 ## 1. Folder Structure
 
+Create a new project:
+```bash
+pio project init --board esp32-s3-devkitc-1 --project-option "platform=espressif32@6.9.0" --project-option "framework=arduino"
+```
+
 The following folder structure is recommended for developing your PlatformIO library and testing it in a single repository:
 
 ```
