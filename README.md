@@ -1,180 +1,165 @@
-# SimpleLibrary
-Comprehensive Guide Creating a Simple PlatformIO Library from Scratch with Release Branch
-
-This document explains how to create a simple PlatformIO library from scratch, organize your repository for testing, and automate the creation of a `release` branch for sharing your library with others via `lib_deps`. The library will perform a basic function, such as printing "Hello, World!" or performing a simple calculation, while following best practices for compatibility with both Arduino and PlatformIO.
+Here’s the updated README, now including details about a `test` branch for end-to-end testing. The `test` branch ensures that the library can be referenced directly via `lib_deps` in PlatformIO, mimicking how end users would consume the library.
 
 ---
 
-## 1. Project Folder Structure and Setup
+# **SimpleLibrary**
 
-Create a new project:
-```bash
-pio project init --board esp32-s3-devkitc-1 --project-option "platform=espressif32@6.9.0" --project-option "framework=arduino"
-```
+## **Overview**
+`SimpleLibrary` is an Arduino-compatible library designed for seamless use in Arduino IDE and PlatformIO. This repository employs a structured development workflow with three branches:
+- `dev` for library development and testing.
+- `main` for production-ready releases.
+- `test` for verifying the library when installed as a dependency via `lib_deps`.
 
-The following folder structure is recommended for developing your PlatformIO library and testing it in a single repository:
+The automated workflow ensures the `main` branch always contains a clean, production-ready version of the library, while the `test` branch verifies the library's usability as a dependency.
+
+---
+
+## **Branching Strategy**
+
+### **1. `dev` Branch**
+- Used for **library development and testing**.
+- Contains:
+  - A complete PlatformIO project structure.
+  - The library code under `lib/SimpleLibrary`.
+  - Test sketches in the `src` folder.
+- Developers work exclusively in this branch.
+
+### **2. `main` Branch**
+- Used for **production-ready library releases**.
+- Contains only the necessary files for the Arduino IDE or PlatformIO.
+- Automatically updated via a GitHub Action whenever changes are pushed to the `dev` branch.
+
+### **3. `test` Branch**
+- Used for **end-to-end testing** of the library as an external dependency.
+- Contains:
+  - A minimal PlatformIO project.
+  - A `platformio.ini` file referencing the library via `lib_deps` from GitHub.
+  - Allows developers to verify the library works correctly as an external dependency.
+
+---
+
+## **Project Structure**
+
+### **`dev` Branch**
+The `dev` branch has the following structure:
 
 ```
 SimpleLibrary/
-|
-├── lib/                        # Library development folder
-│   ├── SimpleLibrary/          # Library folder (develop here)
-│   │   ├── src/                # Core library source files
-│   │   │   ├── SimpleLibrary.cpp
-│   │   │   └── SimpleLibrary.h
-│   │   ├── examples/           # Example sketches
-│   │   │   ├── HelloWorld/
-│   │   │   │   └── HelloWorld.ino
-│   │   │   └── SimpleCalc/
-│   │   │       └── SimpleCalc.ino
-│   │   ├── library.json        # Metadata for PlatformIO
-│   │   ├── library.properties  # Metadata for Arduino IDE
-│   │   └── LICENSE.txt         # License
-|
-├── src/                        # PlatformIO test project
-│   └── main.cpp                # Test code for the library
-|
-├── platformio.ini              # PlatformIO configuration file
-├── README.md                   # Documentation
-├── .gitignore                  # Git ignore rules
+├── lib/
+│   └── SimpleLibrary/
+│       ├── src/
+│       │   ├── SimpleLibrary.cpp
+│       │   └── SimpleLibrary.h
+│       ├── examples/
+│       │   ├── HelloWorld/
+│       │   │   └── HelloWorld.ino
+│       │   └── SimpleCalc/
+│       │       └── SimpleCalc.ino
+│       ├── library.json
+│       ├── library.properties
+│       └── LICENSE.txt
+├── src/
+│   └── main.cpp          # Test code for the library
+├── platformio.ini        # PlatformIO configuration file
+├── README.md
 └── .github/
     └── workflows/
-        └── release-branch.yml  # GitHub Action for automating `release` branch
+        └── update-main.yml  # GitHub Action to update main branch
+```
+
+### **`main` Branch**
+After automation, the `main` branch contains the production-ready library:
+```
+SimpleLibrary/
+├── src/
+│   ├── SimpleLibrary.cpp
+│   └── SimpleLibrary.h
+├── examples/
+│   ├── HelloWorld/
+│   │   └── HelloWorld.ino
+│   └── SimpleCalc/
+│       └── SimpleCalc.ino
+├── library.json
+├── library.properties
+├── LICENSE.txt
+└── README.md
+```
+
+### **`test` Branch**
+The `test` branch is minimal, referencing the library as an external dependency:
+```
+SimpleLibrary/
+├── src/
+│   └── main.cpp          # Test sketch using the library
+├── platformio.ini        # References the library from GitHub
+└── README.md
 ```
 
 ---
 
-## 2. Creating the Simple Library
+## **Testing with the `test` Branch**
 
-### 2.1 Library Code
-Create the library files in `lib/SimpleLibrary/src/`:
+1. **Switch to the `test` Branch**:
+   ```bash
+   git checkout test
+   ```
 
-#### `SimpleLibrary.h`
-```cpp
-#ifndef SIMPLE_LIBRARY_H
-#define SIMPLE_LIBRARY_H
+2. **Structure of `platformio.ini`**:
+   Ensure `platformio.ini` references the library from the `main` branch:
+   ```ini
+   [env:esp32]
+   platform = espressif32
+   board = esp32dev
+   framework = arduino
 
-#include <Arduino.h>
+   lib_deps =
+       https://github.com/mdelgert/SimpleLibrary.git
+   ```
 
-class SimpleLibrary {
-public:
-    SimpleLibrary();
-    void printHello();
-    int addNumbers(int a, int b);
-};
+3. **Write Test Code**:
+   In `src/main.cpp`, include and use the library:
+   ```cpp
+   #include <SimpleLibrary.h>
 
-#endif // SIMPLE_LIBRARY_H
-```
+   SimpleLibrary lib;
 
-#### `SimpleLibrary.cpp`
-```cpp
-#include "SimpleLibrary.h"
+   void setup() {
+       Serial.begin(115200);
+       lib.printHello();
+       int result = lib.addNumbers(3, 7);
+       Serial.print("Result of 3 + 7: ");
+       Serial.println(result);
+   }
 
-SimpleLibrary::SimpleLibrary() {
-    // Constructor
-}
+   void loop() {
+       // Do nothing
+   }
+   ```
 
-void SimpleLibrary::printHello() {
-    Serial.println("Hello, World!");
-}
-
-int SimpleLibrary::addNumbers(int a, int b) {
-    return a + b;
-}
-```
-
-### 2.2 Example Sketches
-Add example sketches to demonstrate the library’s functionality.
-
-#### `examples/HelloWorld/HelloWorld.ino`
-```cpp
-#include <SimpleLibrary.h>
-
-SimpleLibrary lib;
-
-void setup() {
-    Serial.begin(115200);
-    lib.printHello();
-}
-
-void loop() {
-    // Do nothing
-}
-```
-
-#### `examples/SimpleCalc/SimpleCalc.ino`
-```cpp
-#include <SimpleLibrary.h>
-
-SimpleLibrary lib;
-
-void setup() {
-    Serial.begin(115200);
-    int result = lib.addNumbers(5, 7);
-    Serial.print("Result of 5 + 7: ");
-    Serial.println(result);
-}
-
-void loop() {
-    // Do nothing
-}
-```
+4. **Run the Test**:
+   - Build and upload the test sketch:
+     ```bash
+     pio run --target upload
+     ```
+   - Verify that the library works as expected.
 
 ---
 
-## 3. Setting Up PlatformIO for Testing
+## **Automating the `main` Branch Update**
 
-### 3.1 Test Code
-Write test code in the PlatformIO `src/main.cpp` file:
-
-#### `src/main.cpp`
-```cpp
-#include <Arduino.h>
-#include <SimpleLibrary.h>
-
-SimpleLibrary lib;
-
-void setup() {
-    Serial.begin(115200);
-    lib.printHello();
-
-    int result = lib.addNumbers(10, 20);
-    Serial.print("Result of 10 + 20: ");
-    Serial.println(result);
-}
-
-void loop() {
-    // Do nothing
-}
-```
-
-### 3.2 PlatformIO Configuration
-Update `platformio.ini` for your test environment:
-```ini
-[env:esp32]
-platform = espressif32
-board = esp32dev
-framework = arduino
-```
-
----
-
-## 4. Automating the `release` Branch
-
-### 4.1 GitHub Action to Automate the `release` Branch
-
-Create the following GitHub Action file in `.github/workflows/release-branch.yml`:
+### **GitHub Action**
+A GitHub Action automates the process of updating the `main` branch whenever changes are pushed to the `dev` branch. The workflow is saved as `.github/workflows/update-main.yml`:
 
 ```yaml
-name: Update Release Branch
+name: Update Main Branch
 
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
-  update-release-branch:
+  update-main:
     runs-on: ubuntu-latest
 
     steps:
@@ -186,87 +171,55 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-      - name: Prepare Release Branch
+      - name: Prepare Main Branch
         run: |
           set -e  # Exit on any error
 
           # Configurable variables
           LIBRARY_NAME="SimpleLibrary"
 
-          echo "Switching to main branch..."
-          git checkout main
+          echo "Switching to dev branch..."
+          git checkout dev
 
-          echo "Deleting release branch if it exists..."
-          git branch -D release || true
+          echo "Deleting main branch if it exists locally..."
+          git branch -D main || true
 
-          echo "Creating and switching to release branch..."
-          git checkout -B release
+          echo "Checking out a new main branch..."
+          git checkout --orphan main
 
-          echo "Checking if lib/$LIBRARY_NAME exists in main branch..."
-          if [ ! -d "lib/$LIBRARY_NAME" ]; then
-            echo "Error: lib/$LIBRARY_NAME does not exist in the main branch."
-            exit 1
-          fi
-
-          echo "Removing everything except files specified..."
-          find . -mindepth 1 \
-            -name '.git' -prune -o \
-            -name 'README.md' -prune -o \
-            -name '.gitignore' -prune -o \
-            -path "./lib" -prune -o \
-            -exec rm -rf {} +
+          echo "Removing all files from main..."
+          git rm -rf . || true
 
           echo "Moving library contents to the root directory..."
-          mv lib/"$LIBRARY_NAME"/* . || { echo "Error: Failed to move files from lib"; exit 1; }
-          rm -rf lib
+          mkdir -p .temp-lib
+          cp -r lib/"$LIBRARY_NAME"/* .temp-lib
+          cp -r .temp-lib/* .
+          rm -rf .temp-lib lib
 
           echo "Staging and committing changes..."
           git add .
-          git commit -m "Update release branch" || echo "No changes to commit"
+          git commit -m "Update main branch with production-ready library files"
 
-      - name: Pushing release branch to origin
+      - name: Pushing Main Branch
         run: |
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          git push origin release --force
+          git push origin main --force
 ```
 
 ---
 
-## 5. Sharing the Library
+## **Benefits of This Workflow**
 
-### PlatformIO Users
-To use your library, users can add the following to their `platformio.ini`:
-```ini
-lib_deps = https://github.com/mdelgert/SimpleLibrary.git#release
-```
+1. **Cleaner Production (`main`) Branch**:
+   - Contains only the necessary files for end users.
+   - Compatible with Arduino IDE and PlatformIO.
 
-### Arduino IDE Users
-- Download the repository and copy the `lib/SimpleLibrary` folder to their Arduino `libraries/` directory.
+2. **Efficient Development**:
+   - `dev` branch provides a complete development environment with PlatformIO.
 
----
+3. **End-to-End Testing**:
+   - `test` branch allows developers to verify the library as an external dependency.
 
-## 6. Testing the Workflow
-
-1. Develop your library in `lib/SimpleLibrary`.
-2. Push changes to the `main` branch.
-3. Verify that the GitHub Action updates the `release` branch.
-4. Test installing the library via `lib_deps` in another PlatformIO project:
----
-
-## 7. Best Practices
-
-1. **Use Semantic Versioning**:
-   - Update the `version` field in `library.json` for each release.
-
-2. **Document Everything**:
-   - Include clear instructions in `README.md` for installing and using the library.
-
-3. **Automate as Much as Possible**:
-   - Use the GitHub Action for consistent updates to the `release` branch.
-
-4. **Test Thoroughly**:
-   - Regularly test the library in the `main` branch using your test project.
+4. **Automation**:
+   - GitHub Actions keeps `main` up-to-date automatically.
 
 ---
-
-By following this guide, you can create, test, and distribute a simple PlatformIO library efficiently, ensuring compatibility with both Arduino IDE and PlatformIO. This workflow can be expanded for more complex libraries in the future.
