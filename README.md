@@ -16,6 +16,10 @@ Create release branch:
 ```bash
 git branch release
 git push -u origin release
+git branch -r
+git branch -d release
+git branch -D release
+git push origin --delete release
 ```
 
 The following folder structure is recommended for developing your PlatformIO library and testing it in a single repository:
