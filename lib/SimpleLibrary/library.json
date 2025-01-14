@@ -1,6 +1,6 @@
 {
     "name": "SimpleLibrary",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A simple Arduino library to print messages and perform basic calculations.",
     "keywords": ["arduino", "platformio", "example", "hello world", "math"],
     "repository": {
