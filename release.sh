@@ -20,9 +20,10 @@ if [ ! -d "lib/$LIBRARY_NAME" ]; then
   exit 1
 fi
 
-echo "Removing everything except .git, .gitignore, and lib directory..."
+echo "Removing everything except files specified."
 find . -mindepth 1 \
   -name '.git' -prune -o \
+  -name 'README.md' -prune -o \
   -name '.gitignore' -prune -o \
   -path './lib' -prune -o \
   -exec rm -rf {} +
