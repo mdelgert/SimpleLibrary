@@ -163,44 +163,63 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configure Git User
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-      - name: Prepare Main Branch
+      - name: Switch to dev Branch
         run: |
-          set -e  # Exit on any error
-
-          # Configurable variables
-          LIBRARY_NAME="SimpleLibrary"
-
           echo "Switching to dev branch..."
           git checkout dev
 
+      - name: Delete Local Main Branch if Exists
+        run: |
           echo "Deleting main branch if it exists locally..."
           git branch -D main || true
 
-          echo "Checking out a new main branch..."
-          git checkout --orphan main
+      - name: Create and Switch to Main Branch
+        run: |
+          echo "Creating and switching to main branch..."
+          git checkout -B main
 
-          echo "Removing all files from main..."
-          git rm -rf . || true
+      - name: Check if Library Exists
+        run: |
+          LIBRARY_NAME="SimpleLibrary"
+          echo "Checking if lib/$LIBRARY_NAME exists in dev branch..."
+          if [ ! -d "lib/$LIBRARY_NAME" ]; then
+            echo "Error: lib/$LIBRARY_NAME does not exist in the dev branch."
+            exit 1
+          fi
 
+      - name: Remove Unnecessary Files
+        run: |
+          echo "Removing everything except files specified..."
+          find . -mindepth 1 \
+            -name '.git' -prune -o \
+            -name 'README.md' -prune -o \
+            -name '.gitignore' -prune -o \
+            -path './lib' -prune -o \
+            -exec rm -rf {} +
+
+      - name: Move Library Contents to Root Directory
+        run: |
+          LIBRARY_NAME="SimpleLibrary"
           echo "Moving library contents to the root directory..."
-          mkdir -p .temp-lib
-          cp -r lib/"$LIBRARY_NAME"/* .temp-lib
-          cp -r .temp-lib/* .
-          rm -rf .temp-lib lib
+          mv lib/"$LIBRARY_NAME"/* . || { echo "Error: Failed to move files from lib"; exit 1; }
+          rm -rf lib
 
+      - name: Stage and Commit Changes
+        run: |
           echo "Staging and committing changes..."
           git add .
-          git commit -m "Update main branch with production-ready library files"
+          git commit -m "Update main branch" || echo "No changes to commit"
 
-      - name: Pushing Main Branch
+      - name: Push Main Branch to Origin
         run: |
+          echo "Pushing main branch to origin..."
           git push origin main --force
 ```
 
