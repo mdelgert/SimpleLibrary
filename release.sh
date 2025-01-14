@@ -40,11 +40,11 @@ fi
 
 echo "Removing everything except files specified."
 find . -mindepth 1 \
-  -name '.git' -prune -o \            # Exclude the .git folder
-  -name 'README.md' -prune -o \       # Exclude README.md for documentation
-  -name '.gitignore' -prune -o \      # Exclude .gitignore for file exclusion rules
-  -path './lib' -prune -o \           # Exclude the lib folder and its contents
-  -exec rm -rf {} +                   # Remove all other files and folders
+  -name '.git' -prune -o \
+  -name 'README.md' -prune -o \
+  -name '.gitignore' -prune -o \
+  -path './lib' -prune -o \
+  -exec rm -rf {} +
 
 echo "Moving library contents to the root directory..."
 mv lib/"$LIBRARY_NAME"/* . || { echo "Error: Failed to move files from lib"; exit 1; }
