@@ -2,9 +2,9 @@
 
 set -e  # Exit on any error
 
-# echo "Configuring Git user..."
-# git config user.name "Local Test User"
-# git config user.email "local@test.com"
+echo "Configuring Git user..."
+git config user.name "Matthew Elgert"
+git config user.email "mdelgert@yahoo.com"
 
 echo "Switching to main branch..."
 git checkout main
@@ -38,11 +38,11 @@ echo "Restoring library contents to root directory..."
 cp -R /tmp/SimpleLibrary/* .
 rm -rf /tmp/SimpleLibrary
 
-# echo "Staging and committing changes..."
-# git add .
-# git commit -m "Update release branch" || echo "No changes to commit"
+echo "Staging and committing changes..."
+git add .
+git commit -m "Update release branch" || echo "No changes to commit"
 
-# echo "Pushing release branch to origin..."
-# git push origin release --force
+echo "Pushing release branch to origin..."
+git push origin release --force
 
-#echo "Release branch updated successfully!"
+echo "Release branch updated successfully!"
