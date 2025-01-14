@@ -2,9 +2,8 @@
 
 set -e  # Exit on any error
 
-echo "Configuring Git user..."
-git config user.name "Matthew Elgert"
-git config user.email "mdelgert@yahoo.com"
+# Configurable variables
+LIBRARY_NAME="SimpleLibrary"  # Change this to the name of your library
 
 echo "Switching to main branch..."
 git checkout main
@@ -15,28 +14,23 @@ git branch -D release 2>/dev/null || true  # Safely delete release branch if it 
 echo "Creating and switching to release branch..."
 git checkout -B release
 
-echo "Checking if lib/SimpleLibrary exists in main branch..."
-if [ ! -d "lib/SimpleLibrary" ]; then
-  echo "Error: lib/SimpleLibrary does not exist in the main branch."
+echo "Checking if lib/$LIBRARY_NAME exists in main branch..."
+if [ ! -d "lib/$LIBRARY_NAME" ]; then
+  echo "Error: lib/$LIBRARY_NAME does not exist in the main branch."
   exit 1
 fi
 
-echo "Cleaning up any leftover temporary files..."
-rm -rf /tmp/SimpleLibrary
-mkdir -p /tmp/SimpleLibrary
-
-echo "Moving lib/SimpleLibrary contents to a temporary location..."
-cp -R lib/SimpleLibrary/* /tmp/SimpleLibrary/
-
-echo "Removing everything else..."
+echo "Removing everything except .git, .gitignore, and lib/$LIBRARY_NAME..."
 find . -mindepth 1 \
   -name '.git' -prune -o \
   -name '.gitignore' -prune -o \
+  -path "./lib/$LIBRARY_NAME" -prune -o \
+  -path "./lib/$LIBRARY_NAME/*" -prune -o \
   -exec rm -rf {} +
 
-echo "Restoring library contents to root directory..."
-cp -R /tmp/SimpleLibrary/* .
-rm -rf /tmp/SimpleLibrary
+echo "Moving library contents to the root directory..."
+mv lib/"$LIBRARY_NAME"/* . || { echo "Error: Failed to move files from lib/$LIBRARY_NAME"; exit 1; }
+rm -rf lib
 
 echo "Staging and committing changes..."
 git add .
