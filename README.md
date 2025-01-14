@@ -1,4 +1,3 @@
-Here’s the updated README, now including details about a `test` branch for end-to-end testing. The `test` branch ensures that the library can be referenced directly via `lib_deps` in PlatformIO, mimicking how end users would consume the library.
 
 ---
 
