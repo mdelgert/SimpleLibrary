@@ -6,7 +6,8 @@ TimerHandle_t serialPrintTimer;
 
 void serialPrintCallback(TimerHandle_t xTimer)
 {
-    lib.printHello();
+    //lib.printHello();
+    Serial.println("Hello, World!");
 }
 
 void setup()
