@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3  # Ensure latest version
 
       - name: Configure Git User
         run: |
@@ -22,16 +22,6 @@ jobs:
         run: |
           echo "Switching to dev branch..."
           git checkout dev
-
-      - name: Delete Local Main Branch if Exists
-        run: |
-          echo "Deleting main branch if it exists locally..."
-          git branch -D main || true
-
-      - name: Create and Switch to Main Branch
-        run: |
-          echo "Creating and switching to main branch..."
-          git checkout -B main
 
       - name: Check if Library Exists
         run: |
@@ -63,9 +53,15 @@ jobs:
         run: |
           echo "Staging and committing changes..."
           git add .
-          git commit -m "Update main branch" || echo "No changes to commit"
+          git commit -m "Update main branch from dev" || echo "No changes to commit"
 
-      - name: Push Main Branch to Origin
+      - name: Force-Push to Main Branch
         run: |
-          echo "Pushing main branch to origin..."
-          git push origin main --force
+          echo "Force-pushing cleaned dev branch to main..."
+          git push origin dev:main --force
+
+      - name: Verify Main Branch
+        run: |
+          echo "Fetching and verifying main branch..."
+          git fetch origin main
+          git log origin/main -n 1

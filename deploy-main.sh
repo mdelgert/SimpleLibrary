@@ -12,15 +12,14 @@
 #
 # Workflow:
 # 1. Switches to the `dev` branch (where development happens).
-# 2. Deletes the local `main` branch (if it exists).
-# 3. Creates a new `main` branch from `dev`.
-# 4. Cleans up all files except:
+# 2. Cleans up all files in the `dev` branch except:
 #    - `.git` directory
 #    - `README.md`
 #    - `.gitignore`
-#    - `lib/<LIBRARY_NAME>` folder
-# 5. Moves the contents of `lib/<LIBRARY_NAME>` to the root directory.
-# 6. Commits and force-pushes the updated `main` branch to the remote repository.
+#    - `lib/<LIBRARY_NAME>` folder.
+# 3. Moves the contents of `lib/<LIBRARY_NAME>` to the root directory.
+# 4. Commits the changes.
+# 5. Force-pushes the cleaned-up `dev` branch to the `main` branch.
 #
 # Usage:
 # 1. Save this script as `update-main.sh` in your repository.
@@ -47,12 +46,6 @@ LIBRARY_NAME="SimpleLibrary"  # Change this to the name of your library
 echo "Switching to dev branch..."
 git checkout dev
 
-echo "Deleting main branch if it exists locally..."
-git branch -D main 2>/dev/null || true  # Safely delete main branch locally if it exists
-
-echo "Creating and switching to main branch..."
-git checkout -B main
-
 echo "Checking if lib/$LIBRARY_NAME exists in dev branch..."
 if [ ! -d "lib/$LIBRARY_NAME" ]; then
   echo "Error: lib/$LIBRARY_NAME does not exist in the dev branch."
@@ -73,9 +66,9 @@ rm -rf lib
 
 echo "Staging and committing changes..."
 git add .
-git commit -m "Update main branch" || echo "No changes to commit"
+git commit -m "Update main branch from dev" || echo "No changes to commit"
 
-echo "Pushing main branch to origin..."
-git push origin main --force
+echo "Force-pushing dev to main branch..."
+git push origin dev:main --force
 
 echo "Main branch updated successfully!"
