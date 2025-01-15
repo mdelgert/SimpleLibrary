@@ -34,7 +34,7 @@
 # Example:
 # ./update-main.sh
 #
-# Author: Your Name
+# Author: Matthew Elgert
 # Last Updated: January 2025
 # --------------------------------------------------------
 
