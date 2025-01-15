@@ -5,7 +5,7 @@ SimpleLibrary::SimpleLibrary() {
 }
 
 void SimpleLibrary::printHello() {
-    Serial.println("Hello, World 1.0.1");
+    Serial.println("Hello, World 1.0.2");
 }
 
 int SimpleLibrary::addNumbers(int a, int b) {
