@@ -3,6 +3,11 @@
 
 # **SimpleLibrary**
 
+Setup dev branch with platformio.
+```bash
+pio project init --board esp32-s3-devkitc-1 --project-option "platform=espressif32@6.9.0" --project-option "framework=arduino"
+```
+
 ## **Overview**
 `SimpleLibrary` is an Arduino-compatible library designed for seamless use in Arduino IDE and PlatformIO. This repository employs a structured development workflow with three branches:
 - `dev` for library development and testing.
