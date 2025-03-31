@@ -32,11 +32,11 @@ void printFile(const char *filePath) {
             // Serial.print(c); // Commented out to test without Serial interference
             //delay(5); // Too fast can overwhelm the keyboard buffer
             //delay(10); // Seems almost right in most cases
-            delay(25);
-            //delay(50);       
+            //delay(25);
+            delay(50);       
         }
     }
-
+    
     file.close();
     keyboard.write('\n'); // Ensure final newline
     // Serial.println();
@@ -68,8 +68,8 @@ void onButtonLongPress() {
 }
 
 void setup() {
-    Serial.begin(115200);
-    delay(1000);
+    //Serial.begin(115200);
+    //delay(1000);
     Serial.println("Begin Setup:");
 
     // Once enabled, the USBHIDKeyboard will take control of the USB connection
