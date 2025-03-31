@@ -31,7 +31,8 @@ void printFile(const char *filePath) {
             keyboard.write(c);
             // Serial.print(c); // Commented out to test without Serial interference
             //delay(5); // Too fast can overwhelm the keyboard buffer
-            delay(10); // Seems just right for most cases
+            //delay(10); // Seems almost right in most cases
+            delay(25);
             //delay(50);       
         }
     }
