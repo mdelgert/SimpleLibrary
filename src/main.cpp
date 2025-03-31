@@ -8,34 +8,44 @@
 #include <USBHIDKeyboard.h>
 
 USBHIDKeyboard keyboard;
-
 OneButton button(PIN_INPUT, true);
 SimpleLibrary lib;
 
 // Read cert.crt from LittleFS and print it to the Serial Monitor
-void printCert() {
-    File file = LittleFS.open("/cert.crt", "r");
+void printCert(bool keyWrite = false) {
+    File file = LittleFS.open(filePath, "r");
     if (!file) {
-        Serial.println("Failed to open /cert.crt");
+        Serial.println("Failed to open filePath for reading");
         return;
     }
 
-    Serial.println("Reading /cert.crt:");
+    Serial.println("Reading file.");
 
     while (file.available()) {
         String line = file.readStringUntil('\n');
         line.trim(); // Remove any trailing newline or carriage return
-        Serial.println(line);
-        keyboard.println(line); // Send the line to the keyboard
-        // Add a small delay to ensure the keyboard can process the input
-        // This is especially important for HID devices to avoid overwhelming the buffer
-        // You can adjust the delay time based on your needs
-        delay(50); // Adjust this delay as needed
-        // Note: If you're sending a lot of data, consider increasing the delay
-        // to prevent overwhelming the keyboard buffer and ensure reliable transmission.
-        // If you find that the keyboard is not sending all the data correctly,
-        // you may need to experiment with longer delays or implement a more robust
-        // mechanism to handle larger data transfers.
+
+        if(keyWrite) {
+            // If keyWrite is true, write each character to the keyboard individually
+            for (size_t i = 0; i < line.length(); i++) {
+                keyboard.write(line[i]); // Use write() to send a single character
+                Serial.print(line[i]); // Print to the Serial Monitor for debugging
+                delay(100); // Delay to ensure the keyboard can process the input
+            }
+        }
+        else {
+            keyboard.println(line); // Send the line to the keyboard
+            Serial.println(line); // Print to the Serial Monitor for debugging
+            // Add a small delay to ensure the keyboard can process the input
+            // This is especially important for HID devices to avoid overwhelming the buffer
+            // You can adjust the delay time based on your needs
+            delay(100); // Adjust this delay as needed
+            // Note: If you're sending a lot of data, consider increasing the delay
+            // to prevent overwhelming the keyboard buffer and ensure reliable transmission.
+            // If you find that the keyboard is not sending all the data correctly,
+            // you may need to experiment with longer delays or implement a more robust
+            // mechanism to handle larger data transfers.
+        }
     }
 
     file.close();
@@ -44,21 +54,22 @@ void printCert() {
 // Action to be performed single click of the button
 void onButtonPress() {
     Serial.println("Single press detected!");
-    keyboard.print("single press detected!");
-    keyboard.println();
-    printCert();
+    //keyboard.print("single press detected!");
+    //keyboard.println();
+    printCert(false);
 }
 
 // Action to be performed on double click of the button
 void onButtonDoublePress() {
     Serial.println("Double press detected!");
-    Serial.print("Device Name: ");
-    Serial.println(settings.getDeviceName());
-    keyboard.println("double press detected!");
-    Serial.print("Max Heap: ");
-    Serial.println(ESP.getMaxAllocHeap());
-    Serial.print("Free Heap: ");
-    Serial.println(ESP.getFreeHeap());
+    printCert(true); // Call printCert with keyWrite = true to write each character
+    //Serial.print("Device Name: ");
+    //Serial.println(settings.getDeviceName());
+    // keyboard.println("double press detected!");
+    // Serial.print("Max Heap: ");
+    // Serial.println(ESP.getMaxAllocHeap());
+    // Serial.print("Free Heap: ");
+    // Serial.println(ESP.getFreeHeap());
 }
 
 // Action to be performed on long press of the button
@@ -92,7 +103,6 @@ void setup() {
     USB.begin();            // Initialize USB communication
     keyboard.begin();       // Initialize the keyboard
     delay(1000);           // Wait for the USB connection to establish
-
     //settings.setDeviceName("MyESP32");
     //settings.setWifiSSID("HomeNetwork");
     button.attachClick(onButtonPress);
