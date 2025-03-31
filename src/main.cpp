@@ -29,13 +29,13 @@ void printCert(bool keyWrite = false) {
             // If keyWrite is true, write each character to the keyboard individually
             for (size_t i = 0; i < line.length(); i++) {
                 keyboard.write(line[i]); // Use write() to send a single character
+                keyboard.write('\n'); // Simulate pressing Enter after each line
+                delay(10); // Delay to ensure the keyboard can process the input
                 Serial.print(line[i]); // Print to the Serial Monitor for debugging
-                delay(100); // Delay to ensure the keyboard can process the input
             }
         }
         else {
             keyboard.println(line); // Send the line to the keyboard
-            Serial.println(line); // Print to the Serial Monitor for debugging
             // Add a small delay to ensure the keyboard can process the input
             // This is especially important for HID devices to avoid overwhelming the buffer
             // You can adjust the delay time based on your needs
@@ -45,6 +45,7 @@ void printCert(bool keyWrite = false) {
             // If you find that the keyboard is not sending all the data correctly,
             // you may need to experiment with longer delays or implement a more robust
             // mechanism to handle larger data transfers.
+            Serial.println(line); // Print to the Serial Monitor for debugging
         }
     }
 
