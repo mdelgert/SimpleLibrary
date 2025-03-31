@@ -30,11 +30,12 @@ void printFile(const char *filePath) {
         if (c != '\r') { // Skip carriage returns, if any
             keyboard.write(c);
             // Serial.print(c); // Commented out to test without Serial interference
-            delay(10);       // Consistent delay for reliability
-            //delay(50);       // Consistent delay for reliability
+            delay(5);
+            //delay(10);
+            //delay(50);       
         }
     }
-
+    
     file.close();
     keyboard.write('\n'); // Ensure final newline
     // Serial.println();
