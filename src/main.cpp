@@ -17,9 +17,9 @@ void printFile(const char *filePath) {
         // Serial.println("Failed to open filePath for reading");
         return;
     }
-
+    
     // Ensure USB HID is fully initialized
-    delay(500); // Increased delay to give USB more time
+    delay(1000); // Increased delay to give USB more time
     keyboard.begin(); // Reinitialize keyboard to ensure buffer is clear
 
     // Reset file pointer to start
@@ -36,7 +36,7 @@ void printFile(const char *filePath) {
             delay(50);       
         }
     }
-    
+
     file.close();
     keyboard.write('\n'); // Ensure final newline
     // Serial.println();
