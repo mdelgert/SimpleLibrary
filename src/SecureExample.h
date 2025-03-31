@@ -4,4 +4,4 @@
 
 const char *ssid = "Your_SSID";
 const char *password = "Your_PASSWORD";
-const char *filePath = "/cert.crt"; // Path to the certificate file in LittleFS
+//const char *filePath = "/cert.crt"; // Path to the certificate file in LittleFS
