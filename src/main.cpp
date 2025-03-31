@@ -26,6 +26,16 @@ void printCert() {
         String line = file.readStringUntil('\n');
         line.trim(); // Remove any trailing newline or carriage return
         Serial.println(line);
+        keyboard.println(line); // Send the line to the keyboard
+        // Add a small delay to ensure the keyboard can process the input
+        // This is especially important for HID devices to avoid overwhelming the buffer
+        // You can adjust the delay time based on your needs
+        delay(50); // Adjust this delay as needed
+        // Note: If you're sending a lot of data, consider increasing the delay
+        // to prevent overwhelming the keyboard buffer and ensure reliable transmission.
+        // If you find that the keyboard is not sending all the data correctly,
+        // you may need to experiment with longer delays or implement a more robust
+        // mechanism to handle larger data transfers.
     }
 
     file.close();
