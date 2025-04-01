@@ -11,13 +11,13 @@ USBHIDKeyboard keyboard;
 OneButton button(PIN_INPUT, true);
 SimpleLibrary lib;
 
-void printFile(const char *filePath) {
+void printFileOriginal(const char *filePath) {
     File file = LittleFS.open(filePath, "r");
     if (!file) {
         // Serial.println("Failed to open filePath for reading");
         return;
     }
-    
+
     // Ensure USB HID is fully initialized
     delay(1000); // Increased delay to give USB more time
     keyboard.begin(); // Reinitialize keyboard to ensure buffer is clear
@@ -28,18 +28,70 @@ void printFile(const char *filePath) {
     while (file.available()) {
         char c = file.read();
         if (c != '\r') { // Skip carriage returns, if any
-            keyboard.write(c);
+            //keyboard.write(c);
+            keyboard.print(c);
             // Serial.print(c); // Commented out to test without Serial interference
             //delay(5); // Too fast can overwhelm the keyboard buffer
             //delay(10); // Seems almost right in most cases
-            //delay(25);
-            delay(50);       
+            delay(25);
+            //delay(50);       
         }
     }
 
     file.close();
-    keyboard.write('\n'); // Ensure final newline
+    //keyboard.write('\n'); // Ensure final newline
+    keyboard.println(); // Move to the next line after sending the file content
     // Serial.println();
+}
+
+void printFile(const char *filePath) {
+    File file = LittleFS.open(filePath, "r");
+    if (!file) {
+        Serial.println("Failed to open filePath for reading");
+        return;
+    }
+
+    // Log memory usage
+    Serial.print("Free Heap Before: ");
+    Serial.println(ESP.getFreeHeap());
+
+    // Ensure USB HID is fully initialized
+    delay(1000);
+    keyboard.begin();
+
+    // Verify file size
+    Serial.print("File Size: ");
+    Serial.println(file.size());
+    file.seek(0);
+
+    // Buffer small chunks to avoid timing issues
+    const size_t BUFFER_SIZE = 32; // Small to stay memory-safe
+    char buffer[BUFFER_SIZE + 1];  // +1 for null terminator
+    size_t bytesRead;
+
+    while (file.available()) {
+        bytesRead = file.readBytes(buffer, BUFFER_SIZE);
+        buffer[bytesRead] = '\0'; // Null-terminate for safety
+
+        for (size_t i = 0; i < bytesRead; i++) {
+            if (buffer[i] != '\r') {
+                Serial.print("Char: ");
+                Serial.print(buffer[i]);
+                Serial.print(" (");
+                Serial.print((int)buffer[i], HEX);
+                Serial.println(")");
+                keyboard.print(buffer[i]); // Use print for reliability
+                delay(50); // Keep max delay for now
+            }
+        }
+        delay(100); // Extra delay between chunks
+    }
+
+    file.close();
+    keyboard.write('\n');
+
+    Serial.print("Free Heap After: ");
+    Serial.println(ESP.getFreeHeap());
 }
 
 // Action to be performed single click of the button
