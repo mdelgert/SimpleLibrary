@@ -97,13 +97,13 @@ void printFile(const char *filePath) {
 // Action to be performed single click of the button
 void onButtonPress() {
     Serial.println("Single press detected!");
-    printFile("/cert.crt"); // Call the function to print the certificate
+    printFile("/data/mqtt1.crt"); // Call the function to print the certificate
 }
 
 // Action to be performed on double click of the button
 void onButtonDoublePress() {
     Serial.println("Double press detected!");
-    printFile("/description.md");
+    printFile("/data/mqtt2.crt");
     //Serial.print("Device Name: ");
     //Serial.println(settings.getDeviceName());
     // keyboard.println("double press detected!");
